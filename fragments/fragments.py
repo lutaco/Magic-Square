@@ -39,8 +39,17 @@ class Coord:
         else:
             raise ValueError(f'unknown axis {axis}')
 
-    def __sub__(self, other) -> CoordDelta:
-        return CoordDelta(self.x - other.x, self.y - other.y)
+    def __sub__(self, other) -> Coord:
+        return Coord(self.x - other.x, self.y - other.y)
+
+    def __add__(self, other) -> Coord:
+        return Coord(self.x + other.x, self.y + other.y)
+
+    def distance(self, other):
+        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
+
+    def as_tuple(self):
+        return self.x, self.y
 
 
 class Fragment:
@@ -49,7 +58,7 @@ class Fragment:
     main: Coord
 
     def __init__(self, coords):
-        self.coords = coords
+        self.coords = list(coords)
 
     @property
     def main(self):
@@ -70,7 +79,14 @@ class Fragment:
     def dimension(self):
         return len(self.coords)
 
-    def move(self, delta: CoordDelta):
+    def move(self, delta: CoordDelta | Coord):
         for coord in self.coords:
             coord.x -= delta.x
             coord.y -= delta.y
+
+    @property
+    def xy(self):
+        res = []
+        for coord in self.coords:
+            res.append(coord.as_tuple())
+        return res
